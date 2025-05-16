@@ -20,14 +20,27 @@ class _FoodMenuScreenState extends State<FoodMenuScreen> {
     CartItem(name: "Mighty Chicken Patty Burger", image: 'assets/img1.png', price: 209),
   ];
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  void restoreItem() {
+    setState(() {
+      menuItems = Constant().restoreItem(menuItems);
+    });
+  }
+
   void updateCart(CartItem item, int change) {
     setState(() {
       item.quantity += change;
       if (item.quantity <= 0) {
-        cart.remove(item.name);
+        Constant.cart.remove(item.name);
         item.quantity = 0;
       } else {
-        cart[item.name] = item;
+        Constant.cart[item.name] = item;
+        print(Constant.cart.values.first.name);
       }
     });
   }
@@ -62,7 +75,9 @@ class _FoodMenuScreenState extends State<FoodMenuScreen> {
                           GestureDetector(
                               child: _iconButton(context, Icons.search),
                             onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => SearchScreen()));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => SearchScreen())).then((onValue){
+                                restoreItem();
+                              });
                             },
                           ),
                           SizedBox(width: 8),
@@ -219,12 +234,12 @@ class _FoodMenuScreenState extends State<FoodMenuScreen> {
   }
 
   Widget _buildCartSummary() {
-    if (cart.isEmpty) return SizedBox.shrink();
+    if (Constant.cart.isEmpty) return SizedBox.shrink();
 
-    int totalQty = cart.values.fold(0, (sum, item) => sum + item.quantity);
+    int totalQty = Constant.cart.values.fold(0, (sum, item) => sum + item.quantity);
     int totalPrice = 0;
 
-    cart.forEach((title, itm) {
+    Constant.cart.forEach((title, itm) {
       final item = menuItems.firstWhere((e) => e.name == title);
       totalPrice += item.price * itm.quantity;
     });

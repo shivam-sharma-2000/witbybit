@@ -24,7 +24,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _controller.addListener(_onSearchChanged);
-    filteredItems = allItems;
+    restoreItem();
   }
 
   void _onSearchChanged() {
@@ -40,10 +40,10 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       item.quantity += change;
       if (item.quantity <= 0) {
-        cart.remove(item.name);
+        Constant.cart.remove(item.name);
         item.quantity = 0;
       } else {
-        cart[item.name] = item;
+        Constant.cart[item.name] = item;
       }
     });
   }
@@ -105,10 +105,10 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildCartSummary() {
-    if (cart.isEmpty) return SizedBox.shrink();
+    if (Constant.cart.isEmpty) return SizedBox.shrink();
 
-    int totalQty = cart.values.fold(0, (sum, item) => sum + item.quantity);
-    int totalPrice = cart.values.fold(0, (sum, item) => sum + item.quantity * item.price);
+    int totalQty = Constant.cart.values.fold(0, (sum, item) => sum + item.quantity);
+    int totalPrice = Constant.cart.values.fold(0, (sum, item) => sum + item.quantity * item.price);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -179,5 +179,11 @@ class _SearchScreenState extends State<SearchScreen> {
         ],
       ),
     );
+  }
+
+  void restoreItem() {
+    setState(() {
+      filteredItems = Constant().restoreItem(allItems);
+    });
   }
 }
